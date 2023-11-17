@@ -5,7 +5,7 @@ import java.util.List;
 import com.goalsapi.goalsapi.DTO.HabitDTO;
 import com.goalsapi.goalsapi.entity.Habit;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 
 public interface HabitService {
     List<Habit> getHabits();

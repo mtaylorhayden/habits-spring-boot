@@ -14,7 +14,7 @@ import com.goalsapi.goalsapi.exception.HabitNotFoundException;
 import com.goalsapi.goalsapi.repository.GoalRepository;
 import com.goalsapi.goalsapi.repository.HabitRepository;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.*;
 
 @Service
 public class HabitServiceImpl implements HabitService {
