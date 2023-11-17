@@ -18,7 +18,7 @@ import com.goalsapi.goalsapi.DTO.HabitDTO;
 import com.goalsapi.goalsapi.entity.Habit;
 import com.goalsapi.goalsapi.service.HabitService;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 // add swagger docs and authentication
 @Controller

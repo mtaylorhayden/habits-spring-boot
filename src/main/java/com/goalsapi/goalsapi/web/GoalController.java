@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import com.goalsapi.goalsapi.entity.Goal;
 import com.goalsapi.goalsapi.service.GoalService;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
