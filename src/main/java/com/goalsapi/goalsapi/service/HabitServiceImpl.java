@@ -10,6 +10,7 @@ import com.goalsapi.goalsapi.DTO.DTOConverter;
 import com.goalsapi.goalsapi.DTO.HabitDTO;
 import com.goalsapi.goalsapi.entity.Goal;
 import com.goalsapi.goalsapi.entity.Habit;
+import com.goalsapi.goalsapi.exception.GoalNotFoundException;
 import com.goalsapi.goalsapi.exception.HabitNotFoundException;
 import com.goalsapi.goalsapi.repository.GoalRepository;
 import com.goalsapi.goalsapi.repository.HabitRepository;
@@ -42,9 +43,14 @@ public class HabitServiceImpl implements HabitService {
 
     @Override
     public Habit saveHabit(Habit habit, Long goalId) {
-        Goal goal = goalRepository.findById(goalId).get();
-        habit.setGoal(goal);
-        return habitRepository.save(habit);
+        Optional<Goal> goal = goalRepository.findById(goalId);
+
+        if (goal.isPresent()) {
+            habit.setGoal(goal.get());
+            return habitRepository.save(habit);
+        } else {
+            throw new GoalNotFoundException(goalId);
+        }
     }
 
     @Override

@@ -23,7 +23,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.goalsapi.goalsapi.entity.Goal;
 import com.goalsapi.goalsapi.entity.Habit;
+import com.goalsapi.goalsapi.exception.GoalNotFoundException;
 import com.goalsapi.goalsapi.exception.HabitNotFoundException;
+import com.goalsapi.goalsapi.repository.GoalRepository;
 import com.goalsapi.goalsapi.repository.HabitRepository;
 import com.goalsapi.goalsapi.service.HabitServiceImpl;
 
@@ -37,6 +39,9 @@ public class HabitServiceTest {
 
     @Mock
     private HabitRepository habitRepository;
+
+    @Mock
+    private GoalRepository goalRepository;
 
     @InjectMocks
     private HabitServiceImpl habitService;
@@ -142,5 +147,37 @@ public class HabitServiceTest {
 
         assertEquals("Do yoga everyday for a month", results.get(0).getGoal().getTitle());
         assertEquals("Yoga", results.get(0).getName());
+    }
+
+    @Test
+    public void shouldCreateHabitWithGoal() {
+        Goal testGoal = new Goal();
+        testGoal.setId(55L);
+
+        Habit testHabit = new Habit();
+        testHabit.setId(55L);
+        testHabit.setName("Test");
+        testHabit.setGoal(testGoal);
+
+        when(goalRepository.findById(testGoal.getId())).thenReturn(Optional.of(testGoal));
+
+        when(habitRepository.save(testHabit)).thenReturn(testHabit);
+
+        Habit result = habitService.saveHabit(testHabit, testGoal.getId());
+
+        assertEquals(testHabit, result);
+    }
+
+    @Test
+    public void shouldThrowGoalNotFoundExceptionWhenGoalDoesNotExist() {
+        Habit testHabit = new Habit();
+        testHabit.setId(55L);
+        testHabit.setName("Test");
+
+        when(goalRepository.findById(123L)).thenReturn(Optional.empty());
+
+        assertThrows(GoalNotFoundException.class, () -> {
+            habitService.saveHabit(testHabit, 123L);
+        });
     }
 }
