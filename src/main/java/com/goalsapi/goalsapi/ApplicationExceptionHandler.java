@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import com.goalsapi.goalsapi.exception.EntityNotFoundException;
 import com.goalsapi.goalsapi.exception.ErrorResponse;
 
 import com.goalsapi.goalsapi.exception.GoalNotFoundException;
@@ -20,7 +22,7 @@ import com.goalsapi.goalsapi.exception.HabitNotFoundException;
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({ GoalNotFoundException.class, HabitNotFoundException.class })
+    @ExceptionHandler({ GoalNotFoundException.class, HabitNotFoundException.class, EntityNotFoundException.class })
     public ResponseEntity<Object> handleResourceNotFoundException(RuntimeException ex) {
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
