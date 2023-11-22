@@ -17,7 +17,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.goalsapi.goalsapi.security.SecurityConstants;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
+
+    private final SecurityConstants securityConstants;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,7 +37,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         String token = header.replace(SecurityConstants.BEARER, "");
 
-        String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET_KEY))
+        String user = JWT.require(Algorithm.HMAC512(securityConstants.SECRET_KEY))
                 .build()
                 .verify(token)
                 .getSubject();

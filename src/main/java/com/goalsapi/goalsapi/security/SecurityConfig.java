@@ -18,11 +18,15 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SecurityConfig {
 
+    private final SecurityConstants securityConstants;
     private final CustomAuthenticationManager customAuthenticationManager;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(customAuthenticationManager);
+
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(securityConstants,
+                customAuthenticationManager);
+
         authenticationFilter.setFilterProcessesUrl("/authenticate");
 
         http
@@ -33,7 +37,7 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class)
+                .addFilterAfter(new JWTAuthorizationFilter(securityConstants), AuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();

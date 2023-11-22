@@ -19,17 +19,15 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (EntityNotFoundException e) { // Feel free to create a separate function.
+        } catch (EntityNotFoundException e) {
             setResponse(response, HttpServletResponse.SC_NOT_FOUND, "Username does not exist");
         } catch (JWTVerificationException e) {
             setResponse(response, HttpServletResponse.SC_FORBIDDEN, "JWT not valid");
         } catch (RuntimeException e) {
             setResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
         }
-
     }
 
-    // test this IOException throw
     static HttpServletResponse setResponse(HttpServletResponse response, int status, String message)
             throws IOException {
         try {
@@ -40,9 +38,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
             return response;
         } catch (IOException e) {
-            return setResponse(response, status, message);
+            throw e;
         }
-
     }
 
 }
