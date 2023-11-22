@@ -33,6 +33,7 @@ public class HabitServiceTest {
     private Goal goal;
     private Habit habit;
     private List<Habit> habits = new ArrayList<>();
+    private List<Goal> goals = new ArrayList<>();
 
     @Mock
     private HabitRepository habitRepository;
@@ -45,17 +46,59 @@ public class HabitServiceTest {
         // Create a Goal for the Habit
         goal = new Goal();
         goal.setId(1L);
+        goal.setTitle("Do yoga everyday for a month");
+
+        goals.add(goal);
 
         // Create a Habit
         habit = new Habit();
         habit.setId(1L);
-        habit.setName("Habit Name");
-        habit.setType("Ashtanga Primary Series");
-        habit.setDescription("Habit Description");
+        habit.setName("Yoga");
+        habit.setType("Yin-yoga");
+        habit.setDescription("45 minutes of yin-yoga");
         habit.setCreatedAt(LocalDateTime.now());
         habit.setGoal(goal);
 
         habits.add(habit);
+
+        habit = new Habit();
+        habit.setId(2L);
+        habit.setName("Yoga");
+        habit.setType("Ashtanga Primary Series");
+        habit.setDescription("Completed full ashtanga primary series");
+        habit.setCreatedAt(LocalDateTime.now());
+        habit.setGoal(goal);
+
+        habits.add(habit);
+
+        // Create a Goal for the Habit
+        goal = new Goal();
+        goal.setId(2L);
+        goal.setTitle("Learn GraphQL");
+
+        goals.add(goal);
+
+        // Create a Habit
+        habit = new Habit();
+        habit.setId(3L);
+        habit.setName("Code");
+        habit.setType("Schemas");
+        habit.setDescription("Create schemas for my goals-api data");
+        habit.setCreatedAt(LocalDateTime.now());
+        habit.setGoal(goal);
+
+        habits.add(habit);
+
+        habit = new Habit();
+        habit.setId(4L);
+        habit.setName("Code");
+        habit.setType("Resolvers");
+        habit.setDescription("Create resolvers to get my data");
+        habit.setCreatedAt(LocalDateTime.now());
+        habit.setGoal(goal);
+
+        habits.add(habit);
+
     }
 
     @After
@@ -64,30 +107,40 @@ public class HabitServiceTest {
     }
 
     @Test
-    public void getHabitsTest() {
+    public void shouldReturnHabitsWhenHabitsExists() {
         when(habitRepository.findAll()).thenReturn(habits);
 
         List<Habit> results = habitService.getHabits();
 
-        assertEquals("Habit Name", results.get(0).getName());
-        assertEquals("Ashtanga Primary Series", results.get(0).getType());
+        assertEquals("Yoga", results.get(0).getName());
+        assertEquals("Yin-yoga", results.get(0).getType());
     }
 
     @Test
-    public void getHabitByIdTest() {
-        when(habitRepository.findById(1L)).thenReturn(Optional.of(habit));
+    public void shouldReturnHabitWhenIdExists() {
+        when(habitRepository.findById(1L)).thenReturn(Optional.of(habits.get(1)));
 
         Habit result = habitService.getHabitById(1L);
 
-        assertEquals("Habit Name", result.getName());
+        assertEquals("Yoga", result.getName());
     }
 
     @Test
-    public void GetHabitbyIdFailTest() {
+    public void shouldThrowExceptionWhenIdNotExists() {
         when(habitRepository.findById(habit.getId())).thenReturn(Optional.empty());
 
         assertThrows(HabitNotFoundException.class, () -> {
             habitService.getHabitById(habit.getId());
         });
+    }
+
+    @Test
+    public void shouldReturnHabitsByGoalIdWhenHabitsExists() {
+        when(habitRepository.findByGoalId(goals.get(0).getId())).thenReturn(habits);
+
+        List<Habit> results = habitService.getHabitsByGoalId(goals.get(0).getId());
+
+        assertEquals("Do yoga everyday for a month", results.get(0).getGoal().getTitle());
+        assertEquals("Yoga", results.get(0).getName());
     }
 }
