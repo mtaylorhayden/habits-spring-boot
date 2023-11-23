@@ -2,17 +2,19 @@ package com.goalsapi.goalsapi;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -100,19 +102,48 @@ public class HabitControllerTest {
 
     }
 
-    // @After
-    // public void tearDown() {
-
-    // }
-
     @WithMockUser(username = "max.taylor")
     @Test
     public void testGetAllHabits() throws Exception {
         when(habitService.getHabits()).thenReturn(habits);            
 
-        //assert
         mockMvc.perform(get("/habit/all"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("[0].id").value(1));
+    }
+
+    @Test
+    public void testNotAuthenticated() throws Exception {
+        mockMvc.perform(get("/habit/all"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().doesNotExist("Authorization"));
+    }
+
+    @WithMockUser(username = "max.taylor")
+    @Test
+    public void testGetHabitById() throws Exception {
+        when(habitService.getHabitById(habits.get(0).getId())).thenReturn(habits.get(0));            
+
+        mockMvc.perform(get("/habit/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("id").value(1));
+    }
+
+    @WithMockUser(username = "max.taylor")
+    @Test
+    public void testGetHabitsByGoalId() throws Exception {
+
+        when(habitService.getHabitsByGoalId(goals.get(0).getId()))
+            .thenReturn(
+                habits.stream().filter
+                    (h -> 
+                        h.getGoal().getId().equals
+                            (goals.get(0).getId()))
+                                .collect(Collectors.toList()));            
+
+        mockMvc.perform(get("/habit/goal/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("[0].id").value(1))
+            .andExpect(jsonPath("[0].goal.id").value(1));
     }
 }
