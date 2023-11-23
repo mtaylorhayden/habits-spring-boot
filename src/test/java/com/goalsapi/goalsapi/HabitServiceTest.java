@@ -2,12 +2,15 @@ package com.goalsapi.goalsapi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.swing.text.html.Option;
 
 import org.junit.Before;
 import org.junit.After;
@@ -174,6 +177,27 @@ public class HabitServiceTest {
 
         assertThrows(GoalNotFoundException.class, () -> {
             habitService.saveHabit(testHabit, 123L);
+        });
+    }
+
+    @Test
+    public void shouldDeleteHabitWhenHabitExists() {
+        when(habitRepository.findById(habits.get(0).getId())).thenReturn(Optional.of(habit));
+
+        habitService.deleteHabit(habits.get(0).getId());
+
+        // The verify(habitRepository).deleteById(habits.get(0).getId()); 
+        // line checks if the deleteById method of the habitRepository was called with the expected habitId. 
+        // This verifies that the deleteHabit method is interacting with the repository as expected.
+        verify(habitRepository).deleteById(habits.get(0).getId());
+    }
+
+    @Test
+    public void shouldThrowHabitNotFoundExceptionWhenHabitDoesNotExist() {
+        when(habitRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(HabitNotFoundException.class, () -> {
+            habitService.deleteHabit(123L);
         });
     }
 }
