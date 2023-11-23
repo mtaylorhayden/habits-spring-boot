@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -186,9 +184,6 @@ public class HabitServiceTest {
 
         habitService.deleteHabit(habits.get(0).getId());
 
-        // The verify(habitRepository).deleteById(habits.get(0).getId()); 
-        // line checks if the deleteById method of the habitRepository was called with the expected habitId. 
-        // This verifies that the deleteHabit method is interacting with the repository as expected.
         verify(habitRepository).deleteById(habits.get(0).getId());
     }
 
@@ -199,5 +194,25 @@ public class HabitServiceTest {
         assertThrows(HabitNotFoundException.class, () -> {
             habitService.deleteHabit(123L);
         });
+    }
+
+    @Test
+    public void shouldUpdateHabitWhenHabitExists() {
+        Habit newHabit = new Habit();
+        newHabit.setName("updated habit");
+        newHabit.setType("updated type");
+        newHabit.setDescription("updated description");
+
+        when(habitRepository.findById(habits.get(0).getId())).thenReturn(Optional.of(habits.get(0)));
+
+        when(habitRepository.save(habits.get(0))).thenReturn(habits.get(0));
+
+        Habit result = habitService.updateHabit(habits.get(0).getId(), newHabit);
+
+        assertEquals(result, habits.get(0));
+        assertEquals(result.getName(), habits.get(0).getName());
+
+        verify(habitRepository).findById(habits.get(0).getId());
+        verify(habitRepository).save(habits.get(0));
     }
 }
