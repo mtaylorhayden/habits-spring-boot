@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import javax.validation.Valid;
 
-// add swagger docs and authentication
+@SecurityRequirement(name = "Bearer Authentication")
 @Controller
 @RequestMapping(path = "/habit")
 public class HabitController {
@@ -32,26 +32,26 @@ public class HabitController {
     @Autowired
     HabitService habitService;
 
-    @Operation(summary = "Get all habits", description = "Gets all of the habits", security = @SecurityRequirement(name = "Bearer Authentication"))
+    @Operation(description = "Gets all of the habits")
     @GetMapping("/all")
     public ResponseEntity<List<Habit>> getAllHabits() {
         return new ResponseEntity<>(habitService.getHabits(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get single habit", description = "Gets a single by habit by the habitId", security = @SecurityRequirement(name = "Bearer Authentication"))
+    @Operation(description = "Gets a single by habit by the habitId")
     @GetMapping("/{habitId}")
     public ResponseEntity<Habit> getHabitById(@PathVariable Long habitId) {
         return new ResponseEntity<>(habitService.getHabitById(habitId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get all habits associated to a goal", description = "Gets a list of habits associated to a single goal by the goalId", security = @SecurityRequirement(name = "Bearer Authentication"))
+    @Operation(description = "Gets a list of habits associated to a single goal by the goalId")
     @GetMapping("/goal/{goalId}")
     public ResponseEntity<List<Habit>> getHabitsByGoalId(@PathVariable Long goalId) {
         return new ResponseEntity<>(habitService.getHabitsByGoalId(goalId),
                 HttpStatus.OK);
     }
 
-    @Operation(summary = "Creates a habit", description = "Creates a habit and adds it to a specific goal by goalId", security = @SecurityRequirement(name = "Bearer Authentication"))
+    @Operation(description = "Creates a habit and adds it to a specific goal by goalId")
     @PostMapping("/goal/{goalId}/add")
     public ResponseEntity<Habit> addHabit(@Valid @RequestBody Habit habit,
             @Parameter(description = "The habit will be associated with this goal") @PathVariable Long goalId) {
