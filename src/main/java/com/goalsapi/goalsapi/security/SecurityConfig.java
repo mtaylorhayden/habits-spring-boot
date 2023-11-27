@@ -33,7 +33,10 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH).permitAll()
-                .anyRequest().authenticated()
+                .antMatchers(HttpMethod.GET, "/v3/api-docs", "/swagger-ui/index.html", "/v3/api-docs/swagger-config",
+                        "/webjars/**",
+                        "/swagger-resources/**", "/swagger-ui/**")
+                .permitAll().anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
