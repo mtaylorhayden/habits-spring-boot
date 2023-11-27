@@ -18,29 +18,30 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private final SecurityConstants securityConstants;
-    private final CustomAuthenticationManager customAuthenticationManager;
+        private final SecurityConstants securityConstants;
+        private final CustomAuthenticationManager customAuthenticationManager;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(securityConstants,
-                customAuthenticationManager);
+                AuthenticationFilter authenticationFilter = new AuthenticationFilter(securityConstants,
+                                customAuthenticationManager);
 
-        authenticationFilter.setFilterProcessesUrl("/authenticate");
+                authenticationFilter.setFilterProcessesUrl("/authenticate");
 
-        http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH).permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
-                .addFilter(authenticationFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(securityConstants), AuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .authorizeRequests(requests -> requests
+                                                .antMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH)
+                                                .permitAll())
+                                .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
+                                .addFilter(authenticationFilter)
+                                .addFilterAfter(new JWTAuthorizationFilter(securityConstants),
+                                                AuthenticationFilter.class)
+                                .sessionManagement(management -> management
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        return http.build();
+                return http.build();
 
-    }
+        }
 }
